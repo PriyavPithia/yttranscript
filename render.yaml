@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: youtube-summary-backend
+    env: python
+    rootDir: server
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn server:app
+    envVars:
+      - key: GOOGLE_API_KEY
+        value: your-gemini-api-key
+      - key: ALLOWED_ORIGINS
+        value: https://videotranscript1.netlify.app,http://localhost:3000
+    plan: free

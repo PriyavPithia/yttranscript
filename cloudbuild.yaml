@@ -1,0 +1,33 @@
+steps:
+  # Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/youtube-summary-backend', './server']
+  
+  # Push the container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/youtube-summary-backend']
+  
+  # Deploy container image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'youtube-summary-backend'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/youtube-summary-backend'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--memory'
+      - '2Gi'
+      - '--cpu'
+      - '2'
+      - '--set-env-vars'
+      - 'GOOGLE_API_KEY=${_GOOGLE_API_KEY},ALLOWED_ORIGINS=${_ALLOWED_ORIGINS}'
+
+substitutions:
+  _GOOGLE_API_KEY: your-gemini-api-key
+  _ALLOWED_ORIGINS: https://your-netlify-app.netlify.app,http://localhost:3000
